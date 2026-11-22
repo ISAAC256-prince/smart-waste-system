@@ -133,6 +133,88 @@ class DemoWorkflowTest extends TestCase
         $this->assertSame('available', $truck->fresh()->status);
     }
 
+    public function test_assigned_collector_can_update_truck_location_but_another_collector_cannot(): void
+    {
+        $collector = User::factory()->create(['role' => 'collector']);
+        $otherCollector = User::factory()->create(['role' => 'collector']);
+        $bin = $this->createBin('BIN-LOC', 85);
+        $truck = Truck::create([
+            'plate_number' => 'UBG 987C',
+            'driver_name' => 'Demo Driver',
+            'driver_phone' => '0780000000',
+            'status' => 'on_route',
+        ]);
+        Collection::create([
+            'bin_id' => $bin->id,
+            'truck_id' => $truck->id,
+            'collector_id' => $collector->id,
+            'status' => 'in_progress',
+        ]);
+
+        $this->actingAs($collector)
+            ->patchJson(route('trucks.location', $truck), [
+                'latitude' => 0.32,
+                'longitude' => 32.59,
+            ])
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('trucks', [
+            'id' => $truck->id,
+            'latitude' => 0.32,
+            'longitude' => 32.59,
+        ]);
+
+        $this->actingAs($otherCollector)
+            ->patchJson(route('trucks.location', $truck), [
+                'latitude' => 0.33,
+                'longitude' => 32.60,
+            ])
+            ->assertForbidden();
+    }
+
+    public function test_resident_receives_scheduled_collection_notice_and_can_comment_on_a_report(): void
+    {
+        $resident = User::factory()->create(['role' => 'resident']);
+        $bin = $this->createBin('BIN-NOTICE', 85);
+        $truck = Truck::create([
+            'plate_number' => 'UBG 321D',
+            'driver_name' => 'Demo Driver',
+            'driver_phone' => '0780000000',
+            'status' => 'on_route',
+        ]);
+        Collection::create([
+            'bin_id' => $bin->id,
+            'truck_id' => $truck->id,
+            'status' => 'assigned',
+            'scheduled_at' => now()->addDay(),
+            'notes' => 'Kampala Road route',
+        ]);
+        $report = Report::create([
+            'user_id' => $resident->id,
+            'bin_id' => $bin->id,
+            'type' => 'missed_collection',
+            'description' => 'Collection was missed yesterday',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($resident)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Neighbourhood collection alerts')
+            ->assertSee('Kampala Road route');
+
+        $this->actingAs($resident)
+            ->post(route('reports.comment', $report), ['message' => 'Thank you for the update'])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('report_comments', [
+            'report_id' => $report->id,
+            'user_id' => $resident->id,
+            'message' => 'Thank you for the update',
+        ]);
+    }
+
     public function test_roles_see_their_own_workspace_and_cannot_cross_role_boundaries(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
@@ -179,7 +261,9 @@ class DemoWorkflowTest extends TestCase
         $this->actingAs($resident)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('My reports');
+            ->assertSee('Your neighbourhood service')
+            ->assertSee('Collection alerts')
+            ->assertDontSee('KCCA');
         $this->actingAs($resident)
             ->get(route('reports.index'))
             ->assertOk()
@@ -205,7 +289,9 @@ class DemoWorkflowTest extends TestCase
         $this->actingAs($admin)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Kampala operations');
+            ->assertSee('Kampala operations')
+            ->assertSee('Priority route')
+            ->assertSee('Nearest-neighbour sequence');
         $this->actingAs($admin)->get(route('reports.show', $residentReport))->assertOk();
         $this->assertSame($collector->id, $ownCollection->fresh()->collector_id);
     }

@@ -11,11 +11,12 @@ class Collection extends Model
 
     protected $fillable = [
         'bin_id', 'truck_id', 'collector_id',
-        'collected_at', 'status', 'notes'
+        'collected_at', 'scheduled_at', 'status', 'notes'
     ];
 
     protected $casts = [
         'collected_at' => 'datetime',
+        'scheduled_at' => 'datetime',
     ];
 
     public function bin()

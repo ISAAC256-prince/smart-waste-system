@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Report Details')
+@section('title', Auth::user()->isResident() ? 'My service request' : 'Report Details')
 
 @section('content')
 
@@ -28,14 +28,14 @@
 
         <div class="space-y-4">
             <div>
-                <p class="text-sm font-medium text-gray-500">Reported By</p>
+                <p class="text-sm font-medium text-gray-500">{{ Auth::user()->isResident() ? 'Submitted by you' : 'Reported by' }}</p>
                 <p class="text-gray-800">{{ $report->user->name ?? 'Unknown' }}</p>
                 <p class="text-sm text-gray-500">{{ $report->user->phone ?? '' }}</p>
             </div>
 
             @if($report->bin)
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Related Bin</p>
+                    <p class="text-sm font-medium text-gray-500">Collection point</p>
                     <p class="text-gray-800">{{ $report->bin->bin_code }} - {{ $report->bin->location_name }}</p>
                 </div>
             @endif
@@ -55,6 +55,7 @@
             @endif
         </div>
 
+        @if(Auth::user()->isAdmin())
         <div class="mt-6 pt-6 border-t">
             <form action="{{ route('reports.updateStatus', $report) }}" method="POST" class="flex gap-3">
                 @csrf
@@ -71,6 +72,31 @@
                 <button type="submit" class="btn-primary">
                     <i class="fas fa-check mr-2"></i> Update Status
                 </button>
+            </form>
+        </div>
+        @endif
+
+        <div class="mt-6 border-t pt-6">
+            <h3 class="mb-1 text-sm font-bold uppercase tracking-wide text-gray-600">{{ Auth::user()->isResident() ? 'Messages from the collection team' : 'Resident conversation' }}</h3>
+            <p class="mb-4 text-sm text-gray-500">{{ Auth::user()->isResident() ? 'Follow up here and we’ll keep the request conversation together.' : 'Reply to the resident with a service update.' }}</p>
+            <div class="space-y-3">
+                @forelse($report->comments as $comment)
+                    <div class="rounded-lg border border-gray-100 bg-gray-50 p-4">
+                        <div class="mb-2 flex items-center justify-between gap-3">
+                            <span class="text-sm font-semibold text-gray-800">{{ $comment->user->name }}</span>
+                            <time class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</time>
+                        </div>
+                        <p class="text-sm text-gray-600">{{ $comment->message }}</p>
+                    </div>
+                @empty
+                    <p class="text-sm text-gray-400">No messages yet. Add a note to keep the conversation moving.</p>
+                @endforelse
+            </div>
+
+            <form action="{{ route('reports.comment', $report) }}" method="POST" class="mt-4 flex flex-col gap-3 sm:flex-row">
+                @csrf
+                <input type="text" name="message" required maxlength="1000" class="input-field flex-1" placeholder="{{ Auth::user()->isResident() ? 'Ask a question or add a follow-up...' : 'Write a service update for the resident...' }}">
+                <button type="submit" class="btn-primary shrink-0"><i class="fas fa-paper-plane mr-2" aria-hidden="true"></i>Send message</button>
             </form>
         </div>
 

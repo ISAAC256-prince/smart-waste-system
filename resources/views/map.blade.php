@@ -18,6 +18,9 @@
         <span class="flex items-center gap-2">
             <i class="fas fa-flag text-blue-500"></i> Citizen Report
         </span>
+        <span class="flex items-center gap-2">
+            <i class="fas fa-truck text-primary-700"></i> Fleet location
+        </span>
     </div>
 </div>
 
@@ -38,6 +41,7 @@
 
     var bins = @json($bins);
     var reports = @json($reports);
+    var trucks = @json($trucks);
 
     bins.forEach(function(bin) {
         var color = bin.fill_level >= 80 ? '#ef4444' : (bin.fill_level >= 50 ? '#f59e0b' : '#22c55e');
@@ -77,6 +81,19 @@
                 </div>
             `);
         }
+    });
+
+    trucks.forEach(function(truck) {
+        var marker = L.marker([truck.latitude, truck.longitude]).addTo(map);
+        var popup = document.createElement('div');
+        var name = document.createElement('strong');
+        var timestamp = document.createElement('p');
+        name.textContent = truck.plate_number;
+        timestamp.textContent = truck.location_updated_at
+            ? `Last location update: ${new Date(truck.location_updated_at).toLocaleString()}`
+            : 'Location update time unavailable';
+        popup.append(name, timestamp);
+        marker.bindPopup(popup);
     });
 </script>
 @endpush

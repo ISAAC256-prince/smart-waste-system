@@ -5,16 +5,16 @@
    ============================================ */
 @theme {
   --font-sans: "DM Sans", "Segoe UI", sans-serif;
-  --color-primary-50: #edf7f1;
-  --color-primary-100: #d4ecdc;
-  --color-primary-200: #add9bf;
-  --color-primary-300: #7fc69c;
-  --color-primary-400: #4eae77;
-  --color-primary-500: #278e58;
-  --color-primary-600: #197347;
-  --color-primary-700: #155b3b;
-  --color-primary-800: #124a33;
-  --color-primary-900: #103d2c;
+  --color-primary-50: #fff3ec;
+  --color-primary-100: #f9dfd1;
+  --color-primary-200: #f0c0a9;
+  --color-primary-300: #e69b7a;
+  --color-primary-400: #d97854;
+  --color-primary-500: #c96543;
+  --color-primary-600: #b65334;
+  --color-primary-700: #97412b;
+  --color-primary-800: #783625;
+  --color-primary-900: #5f2d22;
 }
 
 /* ============================================
@@ -22,7 +22,7 @@
    ============================================ */
 @layer base {
   body {
-    @apply bg-[#f3f5f1] font-sans antialiased text-gray-800;
+    @apply bg-[#f5f2ec] font-sans antialiased text-[#253044];
   }
 
   ::-webkit-scrollbar {
@@ -50,10 +50,12 @@
     @apply inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700
            text-white font-semibold py-2 px-4 rounded-md transition duration-200
            focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    border-radius: 0.75rem;
+    box-shadow: 0 5px 14px rgba(182, 83, 52, 0.16);
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center bg-gray-500 hover:bg-gray-600
+    @apply inline-flex items-center justify-center bg-[#354158] hover:bg-[#253044]
            text-white font-semibold py-2 px-4 rounded-md transition duration-200
            focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
   }
@@ -78,20 +80,22 @@
 
   /* ---------- Cards ---------- */
   .card {
-    @apply bg-white rounded-lg border border-[#e4e9e2] shadow-sm p-5 sm:p-6;
+    @apply bg-white rounded-2xl border border-[#e8e1d8] shadow-sm p-5 sm:p-6;
+    box-shadow: 0 12px 32px rgba(37, 48, 68, 0.045);
   }
 
   .card-hover {
-    @apply bg-white rounded-lg border border-[#e4e9e2] shadow-sm p-5 sm:p-6 transition transform hover:-translate-y-1 hover:shadow-lg duration-200;
+    @apply bg-white rounded-2xl border border-[#e8e1d8] shadow-sm p-5 sm:p-6 transition transform hover:-translate-y-1 hover:shadow-lg duration-200;
   }
 
   .stat-card {
-    @apply rounded-md border border-[#e4e9e2] bg-white p-4 text-gray-800;
+    @apply rounded-2xl border border-[#e8e1d8] bg-white p-5 text-[#253044];
+    box-shadow: 0 8px 22px rgba(37, 48, 68, 0.035);
   }
 
   /* ---------- Form Inputs ---------- */
   .input-field {
-      @apply w-full px-3.5 py-2.5 border border-gray-300 rounded-md bg-white
+      @apply w-full px-3.5 py-2.5 border border-[#d9d4cc] rounded-xl bg-white
         focus:ring-2 focus:ring-primary-500 focus:border-primary-500
            outline-none transition duration-200;
   }
@@ -135,12 +139,12 @@
 
   /* ---------- Sidebar ---------- */
   .sidebar-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-md transition text-gray-300
-           hover:bg-gray-700 hover:text-white;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl transition text-[#c2c8d2]
+           hover:bg-white/10 hover:text-white;
   }
 
   .sidebar-link-active {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-md bg-primary-600 text-white;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl bg-primary-600 text-white;
   }
 
   /* ---------- Table ---------- */
@@ -191,9 +195,10 @@
   }
 
   .auth-grid {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-    background-size: 32px 32px;
+    background-color: #20283a;
+    background-image: radial-gradient(rgba(232, 142, 102, 0.42) 1px, transparent 1px),
+                      linear-gradient(145deg, transparent 48%, rgba(255, 255, 255, 0.035) 48%, rgba(255, 255, 255, 0.035) 49%, transparent 49%);
+    background-size: 27px 27px, 100% 100%;
   }
 
   .auth-marker {

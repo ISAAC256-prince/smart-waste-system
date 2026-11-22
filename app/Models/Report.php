@@ -23,4 +23,9 @@ class Report extends Model
     {
         return $this->belongsTo(Bin::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(ReportComment::class)->latest();
+    }
 }

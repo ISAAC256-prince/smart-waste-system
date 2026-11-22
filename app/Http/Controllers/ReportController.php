@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Report;
+use App\Models\ReportComment;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -45,8 +46,24 @@ class ReportController extends Controller
     public function show(Report $report, Request $request)
     {
         abort_unless($request->user()->isAdmin() || $report->user_id === $request->user()->id, 403);
-
+        $report->load(['comments.user', 'bin', 'user']);
         return view('reports.show', compact('report'));
+    }
+
+    public function comment(Request $request, Report $report)
+    {
+        abort_unless($request->user()->isAdmin() || $report->user_id === $request->user()->id, 403);
+        $validated = $request->validate([
+            'message' => 'required|string|max:1000',
+        ]);
+
+        ReportComment::create([
+            'report_id' => $report->id,
+            'user_id' => $request->user()->id,
+            'message' => $validated['message'],
+        ]);
+
+        return redirect()->back()->with('success', 'Comment added');
     }
 
     public function updateStatus(Request $request, Report $report)

@@ -55,6 +55,19 @@
 					@enderror
 				</div>
 
+				<div>
+					<label for="scheduled_at" class="block text-sm font-medium text-gray-700 mb-1">Scheduled Collection</label>
+					<input id="scheduled_at" type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" class="input-field @error('scheduled_at') border-red-500 @enderror">
+					@error('scheduled_at')
+						<p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+					@enderror
+				</div>
+
+				<div class="md:col-span-2">
+					<label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Route Notes</label>
+					<textarea id="notes" name="notes" rows="3" class="input-field" placeholder="Add access instructions or collection notes">{{ old('notes') }}</textarea>
+				</div>
+
 			</div>
 
 			<div class="flex justify-end gap-3 mt-6 pt-4 border-t">

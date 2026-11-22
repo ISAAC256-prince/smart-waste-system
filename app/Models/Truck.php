@@ -11,7 +11,11 @@ class Truck extends Model
 
     protected $fillable = [
         'plate_number', 'driver_name', 'driver_phone',
-        'capacity', 'status'
+        'capacity', 'status', 'latitude', 'longitude', 'location_updated_at'
+    ];
+
+    protected $casts = [
+        'location_updated_at' => 'datetime',
     ];
 
     public function collections()

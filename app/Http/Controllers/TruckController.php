@@ -2,11 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Collection;
 use App\Models\Truck;
 use Illuminate\Http\Request;
 
 class TruckController extends Controller
 {
+    public function updateLocation(Request $request, Truck $truck)
+    {
+        $user = $request->user();
+        $isAssigned = Collection::where('truck_id', $truck->id)
+            ->where('collector_id', $user->id)
+            ->where('status', '!=', 'completed')
+            ->exists();
+        abort_unless($user->isAdmin() || $isAssigned, 403);
+
+        $validated = $request->validate([
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ]);
+
+        $truck->update($validated + ['location_updated_at' => now()]);
+
+        return response()->json([
+            'success' => true,
+            'truck' => $truck->only('id', 'plate_number', 'latitude', 'longitude', 'location_updated_at'),
+        ]);
+    }
+
     public function index()
     {
         $trucks = Truck::with('collections')->latest()->paginate(10);

@@ -35,6 +35,8 @@ class CollectionController extends Controller
             'bin_id' => 'required|exists:bins,id',
             'truck_id' => 'required|exists:trucks,id',
             'collector_id' => 'nullable|exists:users,id',
+            'scheduled_at' => 'nullable|date',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
         $validated['status'] = 'assigned';

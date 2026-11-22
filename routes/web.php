@@ -19,8 +19,12 @@ Route::post('/api/iot/update', [IotController::class, 'update'])->name('iot.upda
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/map', [DashboardController::class, 'map'])->name('map');
+    Route::patch('trucks/{truck}/location', [TruckController::class, 'updateLocation'])
+        ->middleware('role:admin,collector')
+        ->name('trucks.location');
 
     Route::resource('reports', ReportController::class)->only(['index', 'create', 'store', 'show']);
+    Route::post('reports/{report}/comments', [ReportController::class, 'comment'])->name('reports.comment');
 
     Route::middleware('role:admin,collector')->group(function () {
         Route::get('collections', [CollectionController::class, 'index'])->name('collections.index');
